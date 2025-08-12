@@ -1,0 +1,21 @@
+# env
+.env
+
+# venv
+.venv
+
+# python cache
+__pycache__
+.pytest_cache
+
+# macOS
+.DS_Store
+
+# Data
+data/collection_videos/*
+!data/collection_videos/readme.md
+
+data/solution_videos/*
+!data/solution_videos/readme.md
+
+lab

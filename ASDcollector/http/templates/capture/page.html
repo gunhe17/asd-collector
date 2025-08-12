@@ -1,0 +1,30 @@
+<!-- extend -->
+{% extends "common/base.html" %}
+
+<!-- import -->
+ {% from "capture/component/countdown/component.html" import countdown %}
+ {% from "capture/component/monitor/component.html" import monitor %}
+{% from "capture/component/loading/component.html" import loading %}
+{% from "capture/component/player/component.html" import player %}
+
+<!-- content -->
+{% block body %}
+
+<script src="/templates/capture/page.js" type="module"></script>
+
+<main class="flex w-full h-full">
+
+    {{ countdown() }}
+    {{ monitor() }}
+    {{ loading() }}
+    {{ player() }}
+
+</main>
+
+<style>
+    html, body {
+        cursor: none;
+    }
+</style>
+
+{% endblock %}

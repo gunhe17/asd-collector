@@ -1,0 +1,88 @@
+{
+  "solutions": [
+    {
+      "id": 1,
+      "path": "data\\solution_videos\\1_5.mp4",
+      "duration": 39.766666666666666
+    },
+    {
+      "id": 2,
+      "path": "data\\solution_videos\\3_1.mp4",
+      "duration": 30.9
+    },
+    {
+      "id": 3,
+      "path": "data\\solution_videos\\4_2-1.mp4",
+      "duration": 24.057366666666667
+    },
+    {
+      "id": 4,
+      "path": "data\\solution_videos\\5_3-3.mp4",
+      "duration": 27.833333333333332
+    },
+    {
+      "id": 5,
+      "path": "data\\solution_videos\\6_3-4.mp4",
+      "duration": 27.961266666666667
+    },
+    {
+      "id": 6,
+      "path": "data\\solution_videos\\7_3-5.mp4",
+      "duration": 39.773066666666665
+    },
+    {
+      "id": 7,
+      "path": "data\\solution_videos\\8_4-1.mp4",
+      "duration": 49.616233333333334
+    },
+    {
+      "id": 8,
+      "path": "data\\solution_videos\\9_4-2.mp4",
+      "duration": 10.944266666666667
+    },
+    {
+      "id": 9,
+      "path": "data\\solution_videos\\10_6-1.mp4",
+      "duration": 93.52676666666667
+    },
+    {
+      "id": 10,
+      "path": "data\\solution_videos\\11_7-1.mp4",
+      "duration": 55.96666666666667
+    }
+  ],
+  "users": [
+    {
+      "id": "7d5ff82b-cdb4-451b-b467-c08ca242987d",
+      "name": "중단시험을위한",
+      "birth": "010101",
+      "center": "중단시험을위한",
+      "type": "B",
+      "called": "시험자야"
+    },
+    {
+      "id": "ec70b9da-c53a-4ffa-ac3c-31560141fae2",
+      "name": "중단시험을위한시험자",
+      "birth": "010101",
+      "center": "중단시험을위한",
+      "type": "B",
+      "called": "시험자야"
+    },
+    {
+      "id": "b0a0af44-3136-422d-9e74-8da12c8e48c5",
+      "name": "test",
+      "birth": "000001",
+      "center": "test",
+      "type": "B",
+      "called": "test"
+    },
+    {
+      "id": "5f4adcbb-4652-4584-8203-2673aa5aa478",
+      "name": "중단시험을위한",
+      "birth": "010101",
+      "center": "인사이터내부시험",
+      "type": "B",
+      "called": "이루야"
+    }
+  ]
+}
