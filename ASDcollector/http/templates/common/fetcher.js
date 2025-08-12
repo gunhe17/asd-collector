@@ -98,7 +98,15 @@ class Fetcher {
                 video_id: video_id
             }
         )
+    }
 
+    txt(user_id) {
+        return fetchHelper.postAndForget(
+            `/backend-api/txt`,
+            {
+                user_id: user_id
+            }
+        )
     }
 }
 

@@ -82,6 +82,10 @@ class Player{
             // current_id_max
             this.current_id_max = s.id;
         }
+
+        fetcher.txt(
+            paramManager.get("user_id")
+        );
     }
 
 

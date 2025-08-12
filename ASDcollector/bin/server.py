@@ -36,6 +36,9 @@ from ASDcollector.http.endpoints.openai import (
 from ASDcollector.http.endpoints.csv import (
     post_csv
 )
+from ASDcollector.http.endpoints.text import (
+    post_txt
+)
 from ASDcollector.http.endpoints.view import (
     home_page,
     capture_page,
@@ -145,6 +148,10 @@ server.router(
     Router(path="/backend-api/csv", methods=["POST"], endpoint=post_csv, dependencies=[])
 )
 
+# text
+server.router(
+    Router(path="/backend-api/txt", methods=["POST"], endpoint=post_txt, dependencies=[])
+)
 
 # #
 # API: front
