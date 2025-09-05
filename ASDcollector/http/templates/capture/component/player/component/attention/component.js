@@ -9,10 +9,37 @@ class Attention {
         this.indexes = [3]; // 입력한 index의 해당하는 동영상의 재생 전에 발생함.
 
         this.attention = document.querySelector(`#attention`);
+        this.preloadedAudios = {};
     }
 
     // common
     async init() {
+        const user_id = paramManager.get("user_id");
+        
+        try {
+            const user = await fetcher.getUser(user_id);
+            const user_called = user.called;
+            
+            for (const index of this.indexes) {
+                let message;
+                
+                if (index === 2) {
+                    message = user_called + "~! 친구들이 뭐하는지 볼래?";
+                } else if (index === 9) {
+                    message = user_called + "~! 나 따라서 신나게 춤춰볼까? 잘 할 수 있지~?";
+                }
+                
+                if (message) {
+                    const audioBlob = await fetcher.openai(message);
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.audioUrl = audioUrl;
+                    this.preloadedAudios[index] = audio;
+                }
+            }
+        } catch (error) {
+            console.error("Failed to preload attention audios:", error);
+        }
     }
 
     async run(index) {
@@ -25,18 +52,22 @@ class Attention {
         
         this._show();
 
-        // user
-        const user = await this._user();
-        const user_called = user.called;
-
-
         if (index === 3) {
             await new Promise(resolve => setTimeout(resolve, 5000));
+        } else if (index === 9) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
         
-        const audio = await this._audio(user_called, index);
-        audio.play();
-        audio.onended = () => URL.revokeObjectURL(audio.audioUrl);
+        let audio;
+        if (this.preloadedAudios[index]) {
+            audio = this.preloadedAudios[index];
+        } else {
+            const user = await this._user();
+            audio = await this._fallbackLoadAudio(user.called, index);
+        }
+        
+        const audioClone = audio.cloneNode();
+        audioClone.play();
 
         await new Promise(resolve => setTimeout(resolve, 5000));
 
@@ -48,8 +79,8 @@ class Attention {
             "attention-end",
             (0).toString()
         );
-
-        return audio;
+        
+        return audioClone;
     }
 
     // unique
@@ -65,7 +96,7 @@ class Attention {
         return user
     }
 
-    async _audio(name, index) {
+    async _fallbackLoadAudio(name, index) {
         let message;
 
         // *중요. usecase의 record_duration도 수정할 것.
