@@ -23,10 +23,8 @@ class Attention {
             for (const index of this.indexes) {
                 let message;
                 
-                if (index === 2) {
+                if (index === 3) {
                     message = user_called + "~! 친구들이 뭐하는지 볼래?";
-                } else if (index === 9) {
-                    message = user_called + "~! 나 따라서 신나게 춤춰볼까? 잘 할 수 있지~?";
                 }
                 
                 if (message) {
@@ -54,8 +52,6 @@ class Attention {
 
         if (index === 3) {
             await new Promise(resolve => setTimeout(resolve, 5000));
-        } else if (index === 9) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
         }
         
         let audio;
