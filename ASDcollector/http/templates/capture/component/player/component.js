@@ -19,6 +19,8 @@ class Player{
         this.current_id_max = 0;
 
         this.is_checked = false;
+        
+        this.frameList = [];
     }
 
     
@@ -52,11 +54,7 @@ class Player{
 
         
         for (const s of solutions) {
-            
             const res = await fetcher.getSolution(s.id);
-            
-            console.log(res)
-            
             const blob = URL.createObjectURL(res);
 
             this.component.insertAdjacentHTML("beforeend", `
@@ -70,18 +68,30 @@ class Player{
 
             // player
             const player = this.component.querySelector(`video[name=video-player-${s.id}]`);
+        
+            player.addEventListener('loadedmetadata', () => {
+                if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+                    player.requestVideoFrameCallback((now, metadata) => {
+                        console.log(`Video ${s.id} ready - presentedFrames: ${metadata.presentedFrames}`);
+                    });
+                }
+            });
+
             if (!await this._is_ready_to_play(player)) {
                 console.log(`Invalid: play ${s.id}`);
                 continue;
             }
             
-            player.addEventListener('ended', async () => {
-                await this.next();
-            });
-
-            // current_id_max
             this.current_id_max = s.id;
+
+            // framelist
+            console.log(s)
+            this.frameList.push({ id: s.id, frames: s.frames });
         }
+
+        this.frameMap = new Map(
+            this.frameList.map(item => [item.id, item.frames])
+        );
 
         fetcher.txt(
             paramManager.get("user_id")
@@ -92,14 +102,45 @@ class Player{
     // unique
 
     play() {
-        fetcher.csv(
-            paramManager.get("user_id"),
-            new Date(Date.now()).toISOString(),
-            "play",
-            this.current_id.toString()
-        );
+        const totalFrames = this.frameMap.get(this.current_id) || 1000;
+        let currentFrame = 0;
+        
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+            const processFrame = (now, metadata) => {
+                currentFrame++;
 
-        this.current_player.play();
+                const epochMs = performance.timeOrigin + metadata.expectedDisplayTime;
+                const isoString = new Date(epochMs).toISOString();
+                
+                if (currentFrame === 1) {
+                    fetcher.csv(
+                        paramManager.get("user_id"),
+                        isoString,
+                        "play",
+                        this.current_id.toString()
+                    );
+                }
+                
+                if (metadata.presentedFrames >= totalFrames) {
+                    console.log(metadata.presentedFrames, currentFrame)
+
+                    fetcher.csv(
+                        paramManager.get("user_id"),
+                        isoString,
+                        "end",
+                        this.current_id.toString()
+                    )
+                    
+                    this._stopAndNext();
+                    return;
+                }
+                
+                this.current_player.requestVideoFrameCallback(processFrame);
+            };
+            
+            this.current_player.requestVideoFrameCallback(processFrame);
+            this.current_player.play();
+        }
     }
 
     pause() {
@@ -152,6 +193,11 @@ class Player{
         this.play();
     }
 
+    _stopAndNext() {
+        this.current_player.pause();
+        this.current_player.hidden = true;
+        this.next();
+    }
 
     // helper
 
@@ -209,6 +255,26 @@ class Player{
     }
 
     async is_ready_to_record() {}
+    
+    // Frame 정보 업데이트 메서드
+    updateFrameInfo(id, frames) {
+        const index = this.frameList.findIndex(item => item.id === id);
+        if (index !== -1) {
+            this.frameList[index].frames = frames;
+        } else {
+            this.frameList.push({ id, frames });
+        }
+        this.frameMap.set(id, frames);
+    }
+    
+    // Debug용 현재 frame 정보 출력
+    getFrameInfo() {
+        return {
+            currentVideoId: this.current_id,
+            frameCount: this.frameMap.get(this.current_id),
+            allFrameData: this.frameList
+        };
+    }
 
 }
 

@@ -11,4 +11,4 @@ timeout /t 3 >nul
 
 taskkill /IM chrome.exe /F
 timeout /t 1 >nul
-start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk --start-fullscreen http://192.168.1.9:5000/home
+start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk --start-fullscreen http://127.0.0.1:5000/home

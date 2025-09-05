@@ -12,9 +12,10 @@ db_config=DBConfig()
 
 
 def natural_sort_key(path):
-    """자연 정렬을 위한 키 함수"""
-    return [int(text) if text.isdigit() else text.lower() 
-            for text in re.split(r'(\d+)', str(path))]
+    return [
+        int(text) if text.isdigit() else text.lower() 
+        for text in re.split(r'(\d+)', str(path))
+    ]
 
 def create(
     db=Path(db_config.DB_PATH)
@@ -32,12 +33,13 @@ def create(
     for v in video_files:
         video_index += 1
         video_path = str(v)
-        video_duration = _duration(str(video_path))
+        video_duration, video_frame_count = _detail(str(video_path))
         solutions.append(
             Solution.from_dict({
                 "id": video_index,
                 "path": video_path,
                 "duration": video_duration,
+                "frames": video_frame_count,
             })
         )
     
@@ -51,17 +53,18 @@ def create(
 
 """private"""
 
-def _duration(video_path: str) -> float | None:
+def _detail(video_path: str) -> tuple:
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        return None
+        return None, None
     
-    frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    duration = frame_count / fps if fps > 0 else None
+    duration = frames / fps if fps > 0 else None
     
     cap.release()
-    return duration
+
+    return duration, frames
 
 
 """CLI"""

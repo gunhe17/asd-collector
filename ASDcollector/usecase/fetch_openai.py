@@ -13,7 +13,7 @@ def fetch(
     text: str,
     model: str = "gpt-4o-mini-tts",
     voice: str = "alloy",
-    speed: float = 1.5
+    speed: float = 1.0
 ) -> BytesIO:
     
     # client

@@ -10,16 +10,19 @@ class Solution:
         id: str, 
         path: str,
         duration: str,
+        frames: str,
     ):
         self.id = id
         self.path = path
         self.duration = duration
+        self.frames = frames
 
     def to_dict(self):
         return {
             "id": self.id,
             "path": self.path,
             "duration": self.duration,
+            "frames": self.frames
         }
 
     @classmethod
@@ -28,6 +31,7 @@ class Solution:
             id=data["id"],
             path=data["path"],
             duration=data["duration"],
+            frames=data["frames"]
         )
 
 ##

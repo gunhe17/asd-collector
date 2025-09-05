@@ -6,7 +6,7 @@ import { paramManager } from "/templates/common/param_manager.js"
  */
 class Attention {
     constructor() {
-        this.indexes = [2, 9]; // 입력한 index의 해당하는 동영상의 재생 전에 발생함.
+        this.indexes = [3]; // 입력한 index의 해당하는 동영상의 재생 전에 발생함.
 
         this.attention = document.querySelector(`#attention`);
     }
@@ -16,6 +16,13 @@ class Attention {
     }
 
     async run(index) {
+        fetcher.csv(
+            paramManager.get("user_id"),
+            new Date(Date.now()).toISOString(),
+            "attention-start",
+            (0).toString()
+        );
+        
         this._show();
 
         // user
@@ -23,10 +30,8 @@ class Attention {
         const user_called = user.called;
 
 
-        if (index === 2) {
+        if (index === 3) {
             await new Promise(resolve => setTimeout(resolve, 5000));
-        } else if (index === 9) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
         }
         
         const audio = await this._audio(user_called, index);
@@ -37,6 +42,13 @@ class Attention {
 
         this._hide();
         
+        fetcher.csv(
+            paramManager.get("user_id"),
+            new Date(Date.now()).toISOString(),
+            "attention-end",
+            (0).toString()
+        );
+
         return audio;
     }
 
@@ -58,10 +70,8 @@ class Attention {
 
         // *중요. usecase의 record_duration도 수정할 것.
 
-        if (index === 2) {
+        if (index === 3) {
             message = name + "~! 친구들이 뭐하는지 볼래?";
-        } else if (index === 9) {
-            message = name + "~! 나 따라서 신나게 춤춰볼까? 잘 할 수 있지~?";
         }
 
         const audioBlob = await fetcher.openai(message);

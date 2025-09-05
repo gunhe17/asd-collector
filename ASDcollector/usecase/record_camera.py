@@ -8,12 +8,10 @@ import os
 from ASDcollector.config import (
     DBConfig,
     SystemConfig,
-    CameraConfig,
 )
 
 db_config = DBConfig()
 system_config = SystemConfig()
-camera_config = CameraConfig()
 
 
 """Helper"""
@@ -84,6 +82,8 @@ def record(
     user_id: str,
     db=Path(db_config.DB_PATH),
 ) -> bool:
+    
+    print("IS CALLED")
     
     # Skip
     if system_config.OS != "Windows": 

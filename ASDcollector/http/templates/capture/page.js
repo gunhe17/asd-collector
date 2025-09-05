@@ -123,6 +123,20 @@ document.addEventListener("keydown", async (event) => {
         window.location.href = `/capture/u/${paramManager.get("user_id")}/v/${event.code.slice("Digit".length)}`;
     }
 
+    else if (
+        event.ctrlKey && 
+        event.shiftKey && 
+        event.altKey &&
+        event.code === "KeyS" &&
+        !event.repeat
+    ) {
+        event.preventDefault();
+        
+        fetcher.stop(
+            paramManager.get('user_id')
+        );
+    }
+
     else {
         event.preventDefault();
         event.stopPropagation();
