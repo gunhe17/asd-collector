@@ -181,17 +181,29 @@ class FetchHelper {
     }
 
     async getBlob(url) {
+        try {
             const response = await fetch(url, {
                 method: "GET",
             });
 
             if (!response.ok) {
-                console.log(await response.json());
-                return;
+                const errorData = await response.text();
+                console.error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`, errorData);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const blob_response = await response.blob();
+            
+            if (blob_response.size === 0) {
+                console.error(`Empty blob received from ${url}`);
+                return null;
+            }
+            
             return blob_response;
+        } catch (error) {
+            console.error(`Network error fetching ${url}:`, error);
+            throw error;
+        }
     }
 
     async patch(url, body) {

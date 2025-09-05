@@ -54,8 +54,15 @@ class Player{
 
         
         for (const s of solutions) {
-            const res = await fetcher.getSolution(s.id);
-            const blob = URL.createObjectURL(res);
+            try {
+                const res = await fetcher.getSolution(s.id);
+                
+                if (!res) {
+                    console.error(`Failed to load video ${s.id}: Empty response`);
+                    continue;
+                }
+                
+                const blob = URL.createObjectURL(res);
 
             this.component.insertAdjacentHTML("beforeend", `
                 <video
@@ -68,6 +75,10 @@ class Player{
 
             // player
             const player = this.component.querySelector(`video[name=video-player-${s.id}]`);
+            
+            player.addEventListener('error', (e) => {
+                console.error(`Video ${s.id} load error:`, e);
+            });
         
             player.addEventListener('loadedmetadata', () => {
                 if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
@@ -87,6 +98,10 @@ class Player{
             // framelist
             console.log(s)
             this.frameList.push({ id: s.id, frames: s.frames });
+            } catch (error) {
+                console.error(`Failed to load video ${s.id}:`, error);
+                await this.retryLoadVideo(s, 3);
+            }
         }
 
         this.frameMap = new Map(
@@ -96,6 +111,57 @@ class Player{
         fetcher.txt(
             paramManager.get("user_id")
         );
+    }
+    
+    async retryLoadVideo(s, retries) {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                console.log(`Retry attempt ${attempt} for video ${s.id}`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                
+                const res = await fetcher.getSolution(s.id);
+                if (!res) {
+                    console.error(`Retry ${attempt}: Empty response for video ${s.id}`);
+                    continue;
+                }
+                
+                const blob = URL.createObjectURL(res);
+                
+                this.component.insertAdjacentHTML("beforeend", `
+                    <video
+                        name="video-player-${s.id}"
+                        class="w-full h-full"
+                        src="${blob}"
+                        hidden
+                    ></video>
+                `);
+                
+                const player = this.component.querySelector(`video[name=video-player-${s.id}]`);
+                
+                player.addEventListener('error', (e) => {
+                    console.error(`Video ${s.id} retry load error:`, e);
+                });
+                
+                player.addEventListener('loadedmetadata', () => {
+                    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+                        player.requestVideoFrameCallback((now, metadata) => {
+                            console.log(`Video ${s.id} ready after retry - presentedFrames: ${metadata.presentedFrames}`);
+                        });
+                    }
+                });
+                
+                if (await this._is_ready_to_play(player)) {
+                    this.current_id_max = Math.max(this.current_id_max || 0, s.id);
+                    this.frameList.push({ id: s.id, frames: s.frames });
+                    console.log(`Video ${s.id} successfully loaded after ${attempt} retries`);
+                    return true;
+                }
+            } catch (error) {
+                console.error(`Retry ${attempt} failed for video ${s.id}:`, error);
+            }
+        }
+        console.error(`Failed to load video ${s.id} after ${retries} retries`);
+        return false;
     }
 
 
